@@ -38,8 +38,10 @@ class db
     public function selectData($data)
     {
         if (is_array($data)) {
-            //generate sql command
+            //generate sql command. change arry(? , ? , ?) to '?' , '?' , '?'.
             $value = "'" . implode("','", $data) . "'";
+        } else {
+            $value = "'" . $data . "'";
         }
         $stm = $this->pdo->prepare("SELECT {$value} FROM {$this->tbl}");
         $stm->execute();
@@ -53,10 +55,7 @@ class db
         if (is_array($data)) {
             //generate sql command
             $data = "'" . implode("','", $data) . "'";
-        }
-        if (is_array($fields)) {
-            //generate sql command
-            $filds = implode(",", $fields);
+            $fields = implode(",", $fields);
         }
         $stm = $this->pdo->prepare("INSERT INTO {$this->tbl} ($fields) VALUES ($data)");
         $stm->execute();
@@ -91,12 +90,12 @@ class db
     {
         $stm = $this->pdo->prepare("SELECT * FROM {$this->tbl} WHERE $key='$value'");
         $stm->execute();
-        //email is unique in this database then return just one record
+        //we assume one field from the table is unique then return just one record
         $results = $stm->fetch(PDO::FETCH_OBJ);
         return $results;
     }
 
-    //general search for data from database
+    //general search for data from the database
     public function searchLikeData($key, $value)
     {
         $stm = $this->pdo->prepare("SELECT * FROM {$this->tbl} WHERE $key LIKE '$value'");
